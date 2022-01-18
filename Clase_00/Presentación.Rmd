@@ -1,0 +1,116 @@
+---
+title: "Curso intensivo Análisis de datos con R para Biociencias"
+subtitle: 'Presentación Curso'
+author: Dr. José Gallardo Matus y Dra. María Angélica Rueda.  Pontificia Universidad Católica de Valparaíso   
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: 
+  beamer_presentation:
+        includes:
+            in_header: mystyle.tex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# PLAN DE LA CLASE
+
+- Palabras de Bienvenida.
+
+- Revisión del Programa del curso.
+
+- Revisión de recursos de comunicación y aprendizaje.
+
+- Lectura condiciones AEA abierta.
+
+- Presentación de los participantes.
+
+
+# PROFESORES
+
+**Dr. José Gallardo**  
+<jose.gallardo@pucv.cl>   
+Profesor de genética y genómica aplicada   
+Biólogo marino  
+Doctor en Ciencias  
+
+**Dr. María Angélica Rueda**  
+<maria.rueda.c@pucv.cl>  
+Investigadora Postdoctoral   
+Licenciada en Matemáticas  
+Doctor en Ciencias Agropecuarias  
+
+# PERFIL DEL PARTICIPANTE Y OBJETIVOS DE APRENDIZAJE
+
+**Perfil del participante**  
+Estudiantes, profesionales o graduados de Biología, Biología Marina, Bioquímica, Biotecnología, Microbiología y áreas afines a los recursos biológicos como la agronomía, la acuicultura, las ciencias veterinarias u otras.
+
+**Objetivos de aprendizaje**  
+Al final de curso los alumnos deben ser capaces de:
+
+- Realizar análisis de datos de biociencias usando el lenguaje de programación R.
+
+- Realizar reportes dinámicos de calidad profesional con Rmarkdown.
+
+# REQUISITOS
+
+- **Estadística:** curso aprobado de nivel universitario.
+
+- **Inglés**: Los softwares R, Rstudio, Rmarkdown y todas las librerías de análisis estadístico que se usarán en el curso solo están disponibles en inglés. Alumnos sin competencias de lectura en inglés no deberían tomar el curso. 
+
+- **Programación básica con R**: Deseable pero no es excluyente.   
+Los alumnos sin experiencia previa en programación con R deben considerar 2 horas de estudio y autoaprendizaje adicional por día para poder alcanzar una comprensión avanzada de los objetivos de aprendizaje del curso.
+
+# CONTENIDOS
+
+- **UNIDAD 1. Investigación reproducible y análisis exploratorio de datos.**  
+*Palabras clave: R, Rstudio, Rmarkdown, variables aleatorias, distribución de probabilidad, análisis exploratorio de datos.*  
+
+
+- **UNIDAD 2. Inferencia estadística.**  
+*Palabras clave: Parámetro, estadístico, correlación, inferencia estadística, contraste de hipótesis.*
+
+- **UNIDAD 3. Modelos lineales y análisis de supervivencia.**  
+*Palabras clave: Regresión lineal, regresión lineal múltiple, regresión logística y análisis de supervivencia.*
+
+
+# CONDICIONES DE OPERACIÓN
+
+- **Nombre de la actividad de extensión académica:**  
+CURSO INTENSIVO ANÁLISIS DE DATOS CON R E INVESTIGACIÓN REPRODUCIBLE PARA BIOCIENCIAS.
+
+- **Resolución:**  
+299/2021.
+
+- **Fecha de ejecución:**  
+INICIO: 15/01/2022  
+TÉRMINO: 28/01/2021  
+
+- **Consultas, sugerencias y reclamos del curso:**
+<acuicultura@pucv.cl>  
+<oct@pucv.cl>  
+
+# RECURSOS DE APRENDIZAJE Y COMUNICACIÓN
+
+- **Repositorio**: Todo el material disponible en Google Drive.
+
+- **Comunicación**: Foro de preguntas por SLACK.
+
+- **Material docente**: Diapositivas de clases, videos, guías de aprendizaje y códigos de programación para el análisis de datos con R.
+
+- **Rstudio**: Acceso a Rstudio.cloud por 1 meses.
+
+# CERTIFICADO DE ASISTENCIA
+
+Se entregará certificación de asistencia del curso a los alumnos que cumplan los siguientes requisitos:
+
+**Asistencia a clases**: 80%, 8 de 10 clases.  
+
+**Tareas**: Realización satisfactoria del 80% de las tareas del curso 1 tarea por día (8 de 10).
+
+# PRESENTACIÓN DE LOS PARTICIPANTES
+
+```{r, echo=FALSE, out.width = '100%' }
+knitr::include_graphics("Welcome.png")
+```
+
