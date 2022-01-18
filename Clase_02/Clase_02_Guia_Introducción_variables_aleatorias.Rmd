@@ -1,0 +1,439 @@
+---
+title: "Guía de trabajo Introducción Variables Aleatorias"
+subtitle: 'Análisis de datos con R para Biociencias'
+author:
+ name: Dr. José A. Gallardo y Dra. María Angélica Rueda.
+ affiliation: Pontificia Universidad Católica de Valparaíso
+ email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    code_folding: hide
+  word_document: default
+  pdf_document: default
+---
+
+<style>
+#TOC {
+  color: black;
+  font-familiy: Calibri;
+  font-size: 14px;
+  border-color: #708090; 
+}
+body {
+   color: black;
+   font-familiy: Calibri;
+}
+
+pre {
+  color: black;
+  background-color: #F8F8FF;
+}
+# header {
+  color: #800000;
+  font-familiy: Calibri;
+  background-color: #F5F5F5;
+  opacity: 0.8;
+  font-size: 16px;
+}
+</style>
+
+#### **Introducción**
+
+**¿Cuál es la diferencia entre variable y dato?**
+
+Las **variables** son las características que se pueden medir en un individuo o en un ambiente y los **datos** son los valores que puede tomar esa variable.
+
+**¿Qué es una variable aleatoria?**
+
+Es una variable cuyo valor se determina por el azar. Las variables aleatorias se representan por letras mayúsculas (**X**) y sus valores numéricos por letras minúsculas ($x_i$).
+
+#### **Objetivos de aprendizaje**
+
+Los objetivos de aprendizaje de esta guía son:
+
+**1**. Observar y predecir una variable aleatoria continua con distribución normal.
+
+**2**. Observar y predecir el comportamiento de variables aleatorias discretas con distribución Bernoulli o Binomial.
+
+**3**. Elaborar un reporte dinámico en formato pdf.
+
+
+#### **Clasificación de variables cuantitativas**
+
+|  Tipo de variable | Descripción       |
+|:-------------|:------------------|
+| **Variables discretas:** | Una variable **_Y_** es **discreta** si puede tomar valores puntales, pueden tener un número finito o infinito de valores.  |
+| **Variables continuas:** | Una variable **_Y_** es **continua** si puede tomar cualquier valor dentro de un intervalo del conjunto de los números reales. La probabilidad de que tome un valor cualquiera es 0 debido a que existe un número infinito de posibilidades en el intervalo. |
+
+
+#### **Clasificación de variables cualitativas o categóricas**
+
+|  Tipo de variable | Descripción |
+|:-------------|:------------------|
+| **Variables nominales:**| Sus valores representan categorías que no obedecen a una clasificación intrínseca. |
+| **Variables ordinales:** | Sus valores representan categorías con alguna clasificación intrínseca. |
+
+### **Distribución de una variable**
+
+**_Distribución empírica (observación)_**: Los datos de una muestra, obtenidos de forma aleatoria de una población, pueden ser usados para observar su comportamiento o distribución. 
+
+**_Distribución de probabilidad (predicción)_**: Las variables aleatorias tienen diferentes distribuciones de probabilidad subyacentes, lo que nos permite predecir su comportamiento y realizar inferencia estadística.
+
+**_Distribución normal_**: Las variables cuantitativas continuas podrían seguir una distribución normal.
+
+#### **¿Cómo puedo observar y predecir el comportamiento de una variable?**
+
+**Funciones clave**
+
+**1.-** Tabla de distribución de frecuencia  
+**table()**  
+
+**2.-** Histograma  
+**hist()**  
+
+**3.-** Gráfico x-y de puntos "p", líneas "l" o ambas "b".  
+**plot()**  
+
+**4.-** Gráfico de cajas y bigotes  
+**boxplot()** 
+
+**5.-** Gráfico de barras 
+**barplot()**
+
+**6.-** Mediante la función de densidad empírica 
+**density()**  
+
+**7.-** Mediante la función de distribución acumulada empírica  
+**ecdf()** 
+
+#### **¿Qué puedo medir de una variable aleatoria continua?**
+
+**Funciones clave**
+
+**1.-** **_Medidas de tendencia central_**: 
+
+media **mean()** y mediana **median()**. 
+
+**2.-** **_Medidas de dispersión_**: 
+
+varianza **var()**, desviación estándar  **sd()**, rango **range()**.
+
+**3.-** **_Concentración de datos en cuantiles_**.    
+
+**quantile()**. 
+
+**4.-** **_Función de distribución de probabilidad acumulada Bernoulli_**.
+
+**pbern()**.
+
+**5.-** **_Función de densidad de probabilidad Bernoulli_**.
+
+**dbern()**.
+
+**6.-** **_Función para hallar los cuantiles de una Bernoulli_**.
+
+**qbern()**.
+
+**7.-** **_Función de distribución de probabilidad acumulada Binomial_**. 
+
+**pbinom()**.
+
+**8.-** **_Función de densidad de probabilidad Binomial_**.
+
+**dbinom()**.
+
+**9.-** **_Función para hallar los cuantiles de una Binomial_**.
+
+**qbinom()**.
+
+**_¿Cómo puedo simular números aleatorios con distribución Binomial y Bernoulli?_**
+
+**10.-**  Simular variable aleatoria Bernoulli.
+
+**rbern()**.
+
+**11.-** Simular variable aleatoria Binomial.
+
+**rbinom()**.
+
+#### **Librerías a usar en esta guía**
+  
+**{stats}** , **{graphics}**, **{readxl}**, **{pander}**, **{MASS}**, 
+**{Rlab}**.
+
+## **Ejercicios**
+
+### **Ejercicio 1.** **Elaborar un Script de R (Archivo .R)**
+
+Elabore un archivo o file con extensión **.R** usando la barra de herramientas de **Rstudio**. Selecciona **File > New file > R script**. Utilice el siguiente ejemplo para completar la información de **metadatos** del script.
+
+    # ----------------------------------------------------------  
+    # Clase 2 - Script Introducción Variables Aleatorias.   
+    # Su nombre. 
+    # Fecha de hoy. 
+    # Curso R para Biociencias. 
+    # ----------------------------------------------------------  
+
+Luego, guarde inmediatamente su script como **script_1_nombre_apellido.R**. Al finalizar la actividad deberá exportar y almacenar este **_script_** en su carpeta drive de tareas.
+
+### **Ejercicio 2.** **Configuración del Script**
+
+Debajo del **metadatos** instale las siguientes librerías **readxl**, **stats**, **graphics**, **pander**, **MASS** y **Rlab** con el comando **install.packages("Nombre de la librería")** o también podría instalar las librerías de forma directa haciendo click en la solapa **Packages** que se encuentra en la parte inferior derecha del Rstudio Cloud y colocar el nombre de las librerías a instalar, hacer este proceso para cada una de las librerías. Luego de tener instaladas las librerías cargelas con la función **library(Nombre de la librería)**.
+
+```{r setup, include=TRUE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(readxl)
+library(stats)
+library(graphics)
+library(pander)
+library(MASS)
+library(Rlab)
+```
+
+### **Ejercicio 3.** **Importar y explorar datos** 
+
+El set de datos **Data.xlsx** contiene información de tamaño (Weight) de 200 animales, los cuales se clacificaron según su sexo en **male** o **female**.
+
+Cree un objeto llamado **dat** e importe el set de datos **Data.xlsx** usando la función **_read_excel()_** de la librería **readxl**. Explore el set de datos usando las funciones **head()**, **tail**, **summary()** y **str()**.
+
+```{r}
+dat <- read_excel("Data.xlsx", sheet = 1)
+head(dat)
+tail(dat)
+summary(dat)
+str(dat)
+```
+
+### **Ejercicio 4.** **Corrección de variables**
+
+Note que en el ejercicio anterior la variable **sex** fue codificada como caracter o texto (chr) en vez de factor. Use la función **as.factor(dat$sex)** para indicar que sexo es un factor de clasificación. Vuelva a ejecutar los comandos **summary()** y **str()** para comprobar que las variables están adecuadamente codificadas.
+
+```{r}
+dat$sex <- as.factor(dat$sex)
+summary(dat)
+str(dat)
+```
+
+### **Ejercicio 5.** **Observar el comportamiento de una variable**
+
+A partir del set de datos **dat** elabore un histograma y un boxplot de la variable cuantitativa continua **Weight**. Use las funciones **hist()**, **boxplot()**. Incluya títulos y leyenda de los ejes con los argumentos **col="", main = ""** y **xlab=""**.
+
+Investigue y use este comando **par(mfrow=c(1,2))** para unir las gráficas en un solo panel con dos columnas.
+
+Investigue que representa el círculo que aparece en el Boxplot.
+
+```{r}
+par(mfrow=c(1,2))
+
+hist(dat$Weight, col="light blue", main = "Histograma Weight", xlab = "Weight (g)")
+
+boxplot(dat$Weight, col="light blue", main = "Boxplot Weight", ylab = "Weight (g)")
+
+
+```
+
+### **Ejercicio 6.** **Métricas del set de datos dat**
+
+Calcule las siguientes métricas del set de datos: promedio, desviación estándar, rango y cuantiles usando las funciones: **mean()**, **sd()**, **range()** y **quantile()**.
+
+```{r}
+mean(dat$Weight)
+sd(dat$Weight)
+range(dat$Weight)
+quantile(dat$Weight)
+```
+
+### **Ejercicio 7.** **Función de densidad**
+
+Usando la función **plot()** elabore:
+
+**a).** Gráfico con la densidad empírica. Debe incluir la función **density()** dentro de la función **plot()**.
+
+```{r}
+# Densidad empírica.
+plot(density(dat$Weight), main="Densidad empírica", xlab="Weight (g)")
+```
+
+**b).** Gráfico con la distribución acumulada empírica. Debe incluir la función **ecdf()** dentro de la función **plot()**.
+
+```{r, echo=TRUE}
+# Distribución acumulada empírica.
+plot(ecdf(dat$Weight), main="Distribución acumulada empírica", xlab="Weight (g)")
+```
+
+### **Ejercicio 8.** **Crear una función y predecir datos observados**
+
+Utilice la función de distribución acumulada empírica **ecdf()** para determinar que proporción de los animales es menor a 20 g, y que proporción es mayor de 30 g:
+
+**a).** Primero cree un un objeto llamado **Fn** con la función de distribución acumulada empírica para los datos del peso de sus animales.
+```{r, echo=TRUE}
+Fn <- ecdf(dat$Weight)
+Fn
+```
+
+**b).** Calcule la proporción de animales menores de 20 g.
+```{r}
+# Fn(x) returns the percentiles for x
+paste0("La proporción de animales menores a 20 g es =", Fn(20)*100, "%") 
+```
+
+**c).** Calcule la proporción de animales mayor a 30 g.
+
+```{r, echo=TRUE}
+# 1- Fn(x) returns 1 - the percentiles for x
+paste0("La proporción de animales mayores a 30 g es =", ((1 - Fn(30))*100), "%")
+```
+
+### **Ejercicio 9.** **Proporción de datos entorno a la media**
+
+En la siguiente figura, la línea roja representa 1 de sobre y bajo la media, la línea azul representa la media. 
+
+```{r, echo=FALSE}
+plot(density(dat$Weight), main="Densidad empírica", xlab="Weight (g)")
+abline(v=19.958 + 4.710923, col="red", lwd=2)
+abline(v=19.958 - 4.710923, col="red", lwd=2)
+abline(v=19.958, col="blue", lwd=2)
+```
+
+¿Qué proporción de los datos está contenido entre una desviación estándar hacia arriba y hacia abajo de la media?.
+
+**a).** Calcule la proporción de datos 1 desviación estándar sobre la media usando la función creada en el ejercicio 9a.
+```{r}
+p1 <- 1 - Fn(19.958 + 4.710923)
+p1
+```
+
+**b).** Calcule la proporción de datos 1 desviación estándar bajo la media usando la función creada en el ejercicio 9a.
+```{r}
+p2 <- Fn(19.958 - 4.710923)
+p2
+```
+
+**c).** Calcule la proporción de datos entre 1 desviación estándar arriba y abajo de la media multiplicado por 100.
+
+```{r}
+paste0(((1 - (p1 + p2))*100),"%")
+# Este valor es muy cercano al 68% teórico de una variable con distribución normal.
+```
+
+### **Ejercicio 10.** **Variable aleatoria discreta (Distribución Binomial)**
+
+Una empresa exportadora de productos marinos implementa un sistema de inspección visual de los productos, clasificándolos como defectuosos **(D)** y no defectuosos **(ND)**.
+
+**a).** ¿Qué tipo de variable y distribución mejor representará al número de productos defectuosos?
+
+```{r}
+# Variable Discreta
+# Distribución Binomial
+```
+
+**b).** Si en un proceso de inspección se detectó un total de 8 productos defectuosos y 24 no defectuosos. ¿Calcule cuál es la probabilidad de que los productos sean defectuosos?.
+
+```{r}
+p <- 8 / 32
+p
+```
+
+**c).** ¿Calcule la probabilidad de que no sean defectuosos?
+```{r}
+q <- 1-p
+q
+```
+
+**d).** El comprador en el extranjero desea comprobar que la información de origen de la proporción de producto defectuosa es correcta. Para ello toma una muestra aleatoria de solo 3 productos.
+
+Responda las siguientes preguntas usando la información de la siguiente tabla relacionada al ejercicio 10:
+
+```{r, echo=FALSE, out.width = '80%', fig.align='center'}
+knitr::include_graphics("Eje1.png")
+```
+
+**e).** ¿Cuál es la probabilidad de que el comprador no detecte productos defectuosos?
+
+```{r}
+# P(Y=0)  
+P_ND <- q*q*q
+P_ND
+```
+
+**f).** ¿Cuál es la probabilidad de que detecte que todos los productos son defectuoso?
+
+```{r}
+# P(Y=3)  
+P_PD <- p*p*p
+P_PD
+```
+
+
+### **Ejercicio 11.** **Variable aleatoria discreta (Distribución Bernoulli)** 
+
+*Alexandrium catenella* es una microalga tóxica que produce el veneno paralizante de los mariscos (VPM). En Chile las intoxicaciones por VPM entre 1972-2002 generaron 456 enfermos y 30 fallecidos (total = 486). A partir de estos antecedentes responda.
+
+**a).** ¿Calcule la letalidad por VPM en Chile?
+
+```{r}
+LT_VPM <- 30 / 486
+LT_VPM
+```
+
+**b).** ¿Que tipo de variable y distribución mejor representa a la intoxicación por VPM?
+
+```{r}
+# "Variable Discreta"
+# "Distribución Bernoulli"
+```
+
+**c).** Se ha reportado un intoxicación masiva de veneno paralizante de los mariscos en Calbuco que dió como resultado 80 personas intoxicadas. ¿Cuántas personas se recuperarán (0) y cuantas morirán (1) por esta intoxicación?. 
+
+Para responder primero nosotros crearemos un objeto para usted denominado **rvpm** y simularemos el resultado de la intoxicación usando la función **rbinom()**. Usaremos **print()** para observar los datos simulados.
+
+```{r, echo=TRUE}
+set.seed(123)
+n <- 80
+p <- 0.0617
+q <- 1-p
+rvpm<-rbinom(n, size=1, prob=0.0617)
+print(rvpm)
+```
+
+**d).** Usando la función **table()** represente la frecuencia esperada de recuperados y fallecidos.
+```{r}
+table(rvpm)
+```
+
+**e).** represente en un histograma la frecuencia de recuperados y fallecidos
+```{r, out.width = '80%'}
+hist(rvpm, col="red", main = "Histograma Intoxicación por VPM")
+```
+
+**f).** Investigue como se calcula el promedio y la varianza de una variable con distribución binomial. Calcule ambos parámetros para la población de estudio.
+
+Promedio de fallecidos
+```{r}
+n*p
+```
+
+Varianza de fallecidos
+```{r}
+n*p*q
+```
+
+**g).** Gráfique función de densidad de las intoxicaciones por VPM usando una la función plot. En el eje "x" grafique los datos simulados con rbinom() y en el eje "y" la función de densidad dbinom().
+
+```{r, out.width = '80%', echo=TRUE}
+dvpm<-dbinom(rvpm, size=1, prob=0.0617)
+plot(x=rvpm, y=dvpm, main="Densidad de rvpm", col="blue4")
+
+```
+
+**h).** Gráfique la  distribución de probabilidad acumulada de las intoxicaciones por VPM usando la función plot(). En el eje "x" grafique los datos simulados con rbinom() y en el eje "y" la probabilidad acumulada con pbinom().
+
+```{r, out.width = '80%'}
+pvpm<-pbinom(rvpm, size=1, prob=0.0617)
+plot(x=rvpm, y=pvpm, main="Prob. acumul. rvpm", col="red", ylim=c(0,1))
+```
+
