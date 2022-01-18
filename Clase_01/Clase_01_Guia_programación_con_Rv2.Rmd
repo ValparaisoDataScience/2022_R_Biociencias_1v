@@ -1,0 +1,195 @@
+---
+title: "Guía programación con R"
+subtitle: 'CURSO R PARA BIOCIENCIAS'
+author:
+ name: Dr. José A. Gallardo.
+ affiliation: Pontificia Universidad Católica de Valparaíso
+ email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    code_folding: hide
+  word_document: default
+  pdf_document: default
+---
+
+<style>
+#TOC {
+  color: black;
+  font-familiy: Calibri;
+  font-size: 14px;
+  border-color: #708090; 
+}
+body {
+   color: black;
+   font-familiy: Calibri;
+}
+
+pre {
+  color: black;
+  background-color: #F8F8FF;
+}
+# header {
+  color: #800000;
+  font-familiy: Calibri;
+  background-color: #F5F5F5;
+  opacity: 0.8;
+  font-size: 16px;
+}
+</style>
+
+## **Introducción**
+
+**R** es un lenguaje de programación orientado a *objetos*. Las funciones y comandos para trabajar con objetos están contenidas en librerías o **packages**, algunas de las cuales ya están habilitadas al iniciar cualquier proyecto de **R** como las librerías **{base}**, **{graphics}**, **{stats}** o **{datasets}**.
+
+Trabajar en equipo es la mejor manera de aprender y conseguir resultados de calidad.  Si tienes dudas pregunta y si puedes ayudar a otro, hazlo.
+
+
+### **Objetivos de aprendizaje**
+
+Los objetivos de aprendizaje de esta guía son:
+
+**1).** Iniciar un proyecto de análisis de datos de Biociecias con **R** y **[Rstudio.Cloud](https://rstudio.cloud/)**.
+
+**2).** Familiarizarse con la creación y manipulación de objetos con **R**.
+  
+  
+### **Objetos de uso frecuente en R**
+
+|  Objeto      | Descripción       |
+|:-------------|:------------------|
+| **vectores** | Colección de datos del mismo tipo (números, letras, etc.) que puede ser creado dentro de **R** o importado como una columna de un **data.frame**. 
+| **data.frame** | Objeto que contiene datos. Habitualmente se crea al importar datos externos, aunque pueden ser creados dentro de **R**. Consiste en una serie de vectores de igual longitud y que pueden ser del mismo tipo o no. |
+| **matriz** | Arreglo que está conformado por filas y columnas, su estructura esta dada por la unión de vectores de un mismo tipo y largo. Cabe resaltar, que los elementos de la matriz deben ser de la misma naturaleza, solo números o solo caracteres|
+
+Existen muchos tipos de vectores, entre ellos:
+
+**numeric** consiste de números reales.  
+**integer** consiste de números enteros.  
+**character** contiene letras, nombres, etc. (*Notar que cada elemento se encuentra entre comillas, por ej.* "A1").  
+**factor** sirve para representar variables categóricas, contiene información sobre los niveles de un factor (ej. Macho, Hembra).
+
+### **Comandos**
+
+A continuación, se presentan algunos comandos de uso frecuente en R. Algunos los usaremos en esta clase y otros en lás proximas clases. 
+
+- La flecha invertida **<-** permite crear objetos. Por ejemplo, el siguiente código crea un objeto llamado Edad con 2 elementos denominados 18 y 15.
+
+**Edad <- c(18, 15)**
+
+Este otro crea un objeto llamado Nombre con 2 elementos denominados Jose y Debora. Nota que los nombre van entre comillas.  
+**Nombre <- c("Jose","Debora")**
+
+- Este comando crea un data.frame llamado datos con los objetos Nombre y edad.  
+**datos <- data.frame(Nombre, Edad)**  
+
+- Este comando crea una matriz con el coeficiente de parentesco de una familia. Nota que la matriz tiene 2 filas y 2 columnas.  
+**parentesco<-matrix(c(0,0,0.5,0.5), nrow = 2, ncol = 2)**  
+
+- Estos comandos permiten explorar objetos  
+**class()**  
+**head()**    
+**tail()**  
+**length()**  
+
+- Estos simbolos *$*, *[,]* permiten extraer información de un objeto, por ejemplo.  
+
+**nombre_objeto$nombre_variable**
+Extrae una columna de un data.frame
+
+**nombre_objeto[1,2]** 
+Extrae el primer elemento de la 2da columna de una matriz
+
+## **Ejercicios**
+
+### **Ejercicio 1.** **Crear vectores**
+
+Crea diferentes vectores con la siguiente información de los integrantes de tu grupo:
+
+1) Nombre de los integrantes: Considera nombre y apellido
+2) Edad: En años.
+3) Sexo: Considera 1 para varón, 2 para mujer.
+4) Estatura: Considera la estatura en cm.
+5) Profesión o nombre de carrera de estudio.
+
+### **Ejercicio 2.** **Crear una base de datos para biociencias**
+
+Crea un objeto con el nombre de tu grupo y coloca dentro en el cada uno de los vectores del ejercicio anterior usando el comando **data.frame()**. Este data.frame representa una sencilla base de datos.
+
+### **Ejercicio 3.** **Trabajar con bases de datos** 
+
+**a).** Ejecuta los comandos **class()** y **str()** para determinar algunas propiedades de tu base de datos.
+
+**b).** Comprueba que tipo de objeto es tu base de datos usando las funciones lógicas **is.vector()** e **is.data.frame()**
+
+**c).** Calcula la edad promedio de los integrantes del grupo con la función **mean()**. Recuerda seleccionar la columna correspondiente a edad, ejemplo, *nombre_grupo$Edad*.
+
+**d).** Calcula la estatura promedio de los integrantes del grupo con la función **mean()**. Recuerda seleccionar la columna correspondiente a estatura *nombre_grupo$Edad*.
+
+**e).** La columna sexo contiene números que representan el si el individuo es varón (1) o mujer (2). Esto es una cualidad, por lo que debemos transformar la columna a factor. Transforma la columna sexo de tu base de datos a factor usando el comando **as.factor()**. Usa el comando **summary()** sobre tu base de datos y chequea que la columna sexo dentro de la base de datos es ahora un factor. 
+
+### **Ejercicio 4.** **Trabajando con librerías**
+
+**a).** Investiga la librería **datasets** y el set de datos **_rivers_** usando la función **help().**
+
+```{r, echo=FALSE}
+help("datasets")
+help("rivers")
+```
+
+**b).** Ejecuta los comandos **class()** y **str()** para determinar algunas propiedades del objeto **_rivers_**. 
+
+```{r, echo=FALSE}
+class(rivers)
+str(rivers)
+
+```
+
+**c).** Comprueba que tipo de objeto es **_rivers_** usando las funciones lógicas **is.vector** e **is.data.frame.**
+
+```{r, echo=FALSE}
+is.data.frame(rivers)
+is.vector(rivers)
+```
+
+**d).** Crea un objeto llamado *datos* y almacena en él, el número de elementos del objeto **_rivers_** usando el comando **length()** . A continuación, explora y usa la función **cat()** para responder la siguiente pregunta ¿Cuántas observaciones tiene el objeto **_rivers_**?
+
+```{r, echo=TRUE}
+datos <- length(rivers)
+cat("El objeto rivers tiene",datos,"observaciones")
+```
+
+**e).** Ejecuta los comandos **head()** y **tail()** para inspeccionar los elementos contenidos al inicio y al final del objeto **_rivers_**.
+
+```{r, echo=FALSE}
+head(rivers)
+tail(rivers)
+```
+
+**f).** Usa la función **summary()** para obtener algunos estadísticos relevantes del objeto **_rivers_**.
+
+```{r, echo=FALSE}
+summary(rivers)
+```
+
+**g).** ¿Cuál es el rango de los datos contenidos en **_rivers_**?. Usa el comando **cat()** para redactar una respuesta.
+
+```{r, echo=FALSE}
+rango <- max(rivers)-min(rivers)
+
+cat("El rango de datos del objeto rivers es", rango, "millas")
+```
+
+**h).** Crea un histograma del objeto **_rivers_**. Incluye los argumentos necesarios para agregar una leyenda a la figura, etiqueta los ejes y colorear con el color de tu preferencia.
+
+```{r, echo=FALSE}
+hist(rivers, main = "Longitud de los principales ríos de Norte América", 
+     xlab = "Longitud de ríos (millas)", ylab = "Frecuencia", col = "Aquamarine")
+```
+
+### **Ejercicio 5.** **Discusión**
+
+Discute con tu compañeros que fue lo más difícil al programar tu base de datos y cuales fueron los errores más comunes.
