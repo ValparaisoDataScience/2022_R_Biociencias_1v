@@ -1,6 +1,6 @@
 ---
 title: "Guía de trabajo Introducción Variables Aleatorias"
-subtitle: 'Análisis de datos con R para Biociencias'
+subtitle: 'Curso Análisis de datos con R para Biociencias'
 author:
  name: Dr. José A. Gallardo y Dra. María Angélica Rueda.
  affiliation: Pontificia Universidad Católica de Valparaíso

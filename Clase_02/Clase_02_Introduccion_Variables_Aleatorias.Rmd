@@ -5,7 +5,7 @@ author: Dra. María Angélica Rueda |  Pontificia
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
   beamer_presentation:
-subtitle: 'Análisis de datos con R para Biociencias'
+subtitle: 'Curso Análisis de datos con R para Biociencias'
 ---
 
 ```{r setup, include=FALSE}
