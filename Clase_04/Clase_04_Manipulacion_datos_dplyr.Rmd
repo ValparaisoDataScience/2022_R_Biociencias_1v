@@ -1,0 +1,196 @@
+---
+title: "Clase 04 -  Manipulación de datos con dplyr"
+author: Dra. María Angélica Rueda  |  <maria.rueda.c@pucv.cl>  |  Pontificia Universidad
+  Católica de Valparaíso
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  beamer_presentation:
+      includes:
+        in_header: mystyle.tex
+subtitle: 'Curso Análisis de datos con R para Biociencias'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(dplyr)
+library(readxl)
+library(ggplot2)
+library(tidyr)
+```
+
+# PLAN DE LA CLASE
+
+## **1.- Introducción**
+    
+- ¿Para qué manipular datos?
+- Librería dplyr: Tuberías.
+- Librería dplyr: Comandos clave.
+
+## **2). Práctica con R y Rstudio cloud.**
+
+- Realizar manipulación de datos con dplyr.
+- Realizar gráficas avanzadas con ggplot2.
+
+# MANIPULACIÓN DE DATOS
+
+## **¿Para qué manipular datos?**
+- Para dar el formato adecuado a nuestro set de datos previo al análisis estadístico.
+- Para hacerlos más legibles y organizados.
+- Etapa clave para una correcta visualización de datos. 
+
+### Ejemplos de tareas comunes durante esta etapa:
+
+* Filtrar datos por categorías.
+
+* Remover datos o imputar datos faltantes.
+
+* Agrupar datos por algún criterio.
+
+* Seleccionar y resumir variables.
+
+* Generar variables derivadas a partir de variables existentes. 
+
+* Calcular medidas resumen de las variables en estudio.
+
+# LIBRERÍA DPLYR: FUNCIONES CLAVE
+
+La librería **dplyr** posee varias funciones que permiten manipular data.frames de forma ágil e intuitiva.
+
+## **Funciones claves**:
+
+**arrange**: Permite ordenar la base de datos según una variable de forma ascendente o descendente.
+
+**select()**: Permite extraer o seleccionar variables/columnas específicas de un data.frame.
+
+**mutate()**: Permite calcular/generar nuevas variables "derivadas". Útil para calcular proporciones, tasas.
+
+**filter()**: Para filtrar desde una tabla de datos un subconjunto de filas. Ej. solo un nivel de un factor, observaciones que cumplen algún criterio (ej. > 20).
+
+**group_by()**: Permite agrupar filas con base a los niveles de alguna variable o factor.
+
+**replace_na**: Permite reemplazar datos faltante (NA) por algún valor.
+
+**summarize**: Permite obtener medidas resumen de las variables.
+
+# LIBRERÍA DPLYR: EL OPERADOR PIPE (TUBERÍA).
+
+**dplyr** usa el operador pipe **%>%** como una tubería para enlazar un data.frame con una o más funciones.
+```{r, echo=TRUE}
+x <- rnorm(5)
+y <- rnorm(5)
+dat <- data.frame(x,y)
+dat %>% max
+```
+
+```{r, echo=TRUE}
+dat %>% arrange(y)
+```
+
+
+# ESTUDIO DE CASO: MUESTREO DE PECES
+
+**Objeto: peces**
+
+| Pez | Especie | Sexo | Peso |  Parásitos |
+|:---:|:---:|:----:|:-----|:---:|
+| 1  | A   | Hembra | 174    |  0 |
+| 2  | A   | Hembra | 155    | 2 |
+| 3  | A   | Hembra | 131    |  25 |
+| 4  | B   | Macho |     |  8 |
+| 5  | B   | Macho | 103    | 33  |
+| 6  | B   | Hembra | 138    |  15 |
+| 7 | C   | Hembra | 135    | 5  |
+| 8  | C   | Macho | 138    | 20  |
+| 9 | C   | Hembra | 135    |   |
+
+# FUNCIÓN REPLACE_NA() CON LIBRERÍA TIDYR
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+peces <- read_excel("Peces.xlsx")
+```
+
+```{r, echo=TRUE}
+peces <- peces %>% 
+  replace_na(list(Peso= 120, Parasitos= 25))
+```
+
+# FUNCIÓN SELECT()
+
+```{r, echo=TRUE}
+select(peces, Especie, Sexo)
+```
+
+# FUNCIÓN SELECT() CON PIPE
+
+```{r, echo=TRUE}
+peces %>% select(Especie, Sexo)
+```
+
+# FUNCIÓN FILTER() CON PIPE
+
+```{r, echo=TRUE}
+peces %>% filter(Sexo == "Macho")
+```
+
+# MÚLTIPLES FUNCIONES Y TUBERÍAS
+
+```{r, echo=TRUE}
+peces %>% select(Especie, Sexo, Peso) %>% 
+  filter(Sexo == "Macho")
+```
+# FUNCIÓN SUMMARIZE()
+
+```{r, echo=TRUE}
+peces %>% select(Especie, Sexo, Peso, Parasitos) %>% 
+          summarize(n = n(), 
+          Promedio_Peso = mean(Peso), 
+          Maximo_Parasitos = max(Parasitos))
+```
+# FUNCIÓN SUMMARIZE() + GROUP_BY()
+
+```{r, echo=TRUE}
+peces %>% group_by(Especie) %>% 
+          summarize(n = n(), 
+          Promedio_Peso = mean(Peso), 
+          Maximo_Parasitos = max(Parasitos))
+```
+
+# GENERAR NUEVA BASE DE DATOS + FUNCIÓN MUTATE()
+
+```{r, echo=TRUE}
+datos<- peces %>% select(Especie, Sexo, Peso, Parasitos)%>% 
+  mutate(Densidad_parasitos = Parasitos/Peso)
+```
+
+# HACER PLOT CON GGPLOT2
+
+```{r, echo=FALSE, out.width = '75%', message=FALSE, fig.align='center'}
+My_Theme = theme(
+  axis.title.x = element_text(size = 20),
+  axis.text.x = element_text(size = 20),
+  axis.title.y = element_text(size = 20),
+  axis.text.y = element_text(size = 20))
+grafico= ggplot(datos, aes(x=Peso, y=Parasitos))+
+  geom_point(size= I(2))+
+  labs(x= "Peso(g)", y= "Cantidad de parásitos")+
+  theme_bw()
+grafico+My_Theme
+
+```
+
+# PRÁCTICA ANÁLISIS DE DATOS
+1.- Guía de trabajo Rmarkdown disponible en drive.  
+**Clase 04**
+
+2.- La tarea se realiza en Rstudio.cloud.
+**Clase 04 - Manipular datos con dplyr**
+
+# RESUMEN DE LA CLASE
+
+- Manipulamos datos con dplyr.
+
+- Aplicamos tuberías con pipe **%>%**.
+
+- Hicimos gráfico con ggplot2 usando la base generada con dplyr.
+
+- Comunicamos un análisis exploratorio de datos de forma efectiva.
