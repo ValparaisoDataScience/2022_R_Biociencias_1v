@@ -1,5 +1,5 @@
 # ----------------------------------------------------------
-# Clase 03 - Script graficas simples con ggplot2
+# Clase 03 - Script ggplot2
 # Dr. José Gallardo
 # 19 enero 2022
 # Curso R para Biociencias

@@ -367,8 +367,8 @@ ggplot(CO2, aes(x=Treatment, y=uptake))+
 
 ## RESUMEN DE LA CLASE
 
-- Identificamos variación, covariación, interacción y modelo que explica la relación entre variables.
+- Identificamos la importancia de los análisis exploratorio de datos.
 
 - Realizamos gráficas avanzadas con ggplot2.  
 
-- Comunicamos EDA de forma efectiva.
+- Conocemos algunas recomendaciones para comunicar EDA de forma efectiva.

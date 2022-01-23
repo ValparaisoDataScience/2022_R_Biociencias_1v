@@ -63,7 +63,7 @@ Los objetivos de aprendizaje de esta guía son:
 
 **ggplot2**: Librería de visualización de datos preferido para realizar graficas avanzadas con R [ggplot2 book](https://ggplot2-book.org//)).
 
-**psych**: Libería con un comando simple para realizar histogramas y correlaciones de datos en formato de matriz.
+**psych**: Librería con un comando simple para realizar histogramas y correlaciones de datos en formato de matriz.
 
 ## **Comandos**
 
