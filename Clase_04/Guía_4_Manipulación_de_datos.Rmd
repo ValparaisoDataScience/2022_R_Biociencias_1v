@@ -1,0 +1,337 @@
+---
+title: "Clase 04 - Guía Manipulación de datos con dplyr"
+subtitle: 'Curso Análisis de datos con R para Biociencias'
+author:
+ name: Dr. José A. Gallardo y Dra. María Angélica Rueda.
+ affiliation: Pontificia Universidad Católica de Valparaíso
+ email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    code_folding: hide
+  word_document: default
+  pdf_document:
+    latex_engine: xelatex
+---
+
+<style>
+#TOC {
+  color: black;
+  font-familiy: Calibri;
+  font-size: 14px;
+  border-color: #708090; 
+}
+body {
+   color: black;
+   font-familiy: Calibri;
+}
+
+pre {
+  color: black;
+  background-color: #F8F8FF;
+}
+# header {
+  color: #800000;
+  font-familiy: Calibri;
+  background-color: #F5F5F5;
+  opacity: 0.8;
+  font-size: 16px;
+}
+</style>
+
+#### **Introducción**
+
+#### **_Manipulación de datos._**
+
+La manipulación de datos es una de las actividades que más tiempo demanda durante un análisis exploratorio ya que implica tanto dar el formato adecuado para realizar los análisis estadísticos, como aplicar transformaciones sobre las variables de interés. Este proceso se lleva a cabo con el fin de generar un conjunto de datos limpio y diferente del set de datos original, adecuado para su *posterior* análisis.
+
+La manipulación de datos se puede resumir, pero no limitar, a cuatro operaciones básicas:
+
+**1.-** **Extraer subconjuntos de datos** 
+
+Ya sea por filas utilizando algún criterio o por columnas (variables) donde no es necesario considerar a todas las variables presentes en la base de datos original.
+
+**2.-** **Transformar variables**
+
+La transformación de datos implica realizar operaciones aritméticas o lógicas sobre las variables de interes. En general cuando una **variable es continua** realizamos operaciones **_aritméticas_** y cuando es **categórica** operaciones **_lógicas_**.
+
+**3.-** **Resumir los datos**
+
+Se puede resumir la información por variable calculando por ejemplo valores promedio, desviaciones estándar, valores mínimos o máximos.
+
+**4.-** **Compactar o unir con otros conjuntos de datos** 
+
+Es posible que en tiempos posteriores surjan nuevas bases de datos que pueden enriquecer nuestros análisis, es muy útil combinar/compactar dicha información de forma homogénea en una sola base de datos.
+
+#### **_Visualización de datos._**
+
+Como ya hemos mencionado, en la etapa de análisis exploratorio de datos es muy importante hacer representaciones gráficas o visualizar los datos, durante la etapa de manipulación esto nos permitirá:
+
+* Detectar posibles valores atípicos u "outliers" en ingles.
+
+* Identificar la posible distribución subyacente de la variable respuesta **(Y)**. 
+
+* Analizar posibles relaciones/asociaciones entre la variable respuesta **(Y)** y alguna variable explicativa **(X)**.
+
+* Sintetizar de forma gráfica la información relevante de los datos.
+
+En esta guía continuaremos trabajando con librería **ggplot2**, que como ya hemos visto contiene la función **_ggplot()_** con la que se generan gráficos tanto visualmente informativos como de agradable aspecto. Pero además trabajaremos con varias funciones de la librería [dplyr](https://dplyr.tidyverse.org/), y algunas de la librearía [tidyr](https://tidyr.tidyverse.org/). En conjunto estas librerías son una herramientas muy poderosas de R para manipular datos de forma efectiva.
+
+#### **Comandos para realizar gráficas avanzadas con ggplot2**
+
+|  **Comandos** | **Función** |
+|:-------------|:------------------|
+| **ggplot():**| Comando base sobre el cual se realizan gráficas avanzadas. |
+| **geom_point():** | Argumento que se adiciona a la función ggplot() para generar diagramas de dispersión. |
+| **geom_line():** | Argumento que se adiciona a la función ggplot() para generar diagramas de líneas. |
+| **geom_col():** | Argumento que se adiciona a la función ggplot() para generar diagramas de barras. |
+| **geom_histogram():** | Argumento que se adiciona a la función ggplot() para generar histogramas. | 
+| **geom_boxplot():** | Argumento que se adiciona a la función ggplot() para generar gráficos de cajas y bigotes. |   
+| **facet_wrap(~ variable):** | Argumento que se adiciona a la función ggplot() para que realice tantos gráficos según los niveles que tenga la variable. |
+
+#### **Comandos para manipular datos con dplyr**
+
+|  **Comandos** | **Función**      |
+|:-------------|:------------------|
+| **%>%** | Este comando se llama **_pipe_** o "tubería", es una herramienta para la composición de funciones, lo que facilita la resolución de problemas grandes partiéndolos en pedazos pequeños. |
+| **filter()** | Filtra los datos por algún criterio establecido por el analista. |
+| **arrange()** | Ordena la base de datos según una variable de forma ascendente o descendente. |
+| **mutate()** | Cambia el contenido de una variable o genera variables derivadas a partir de variables existentes en el conjunto de datos. |
+| **summarize()** | Resume la información de la/s variable/s en un solo dato. Algunas funciones que se pueden usar para resumir la información son: **_mean_** *para calcular el promedio por variable*, **_sum_** *para sumar las observaciones de una variable*, **_median_** *para calcular la mediana por variable*,**_min_** *para encontrar el valor mínimo por variable* y **_max_** *para encontrar el valor máximo por variable*.|
+| **group_by** | Agrupa las observaciones (filas de la base de datos) por algún criterio establecido por el analista.|
+
+
+Finalmente, no olvides que en la mayoría de los casos los datos de R deben tener la siguiente estructura.
+
+* Cada columa es una variable.
+* Cada fila es una observación.
+* Cada celda es un simple valor.
+
+#### **Objetivos de aprendizaje**
+
+Los objetivos de aprendizaje de esta guía son:
+
+**1**. - Realizar un análisis exploratorio de datos.  
+
+**2**. - Realizar gráficas avanzadas con **ggplot2**.
+
+**3**- - Realizar manipulación de datos con **dplyr**.
+
+**4**. - Elaborar un reporte dinámico en formato pdf con **Rmarkdown**.
+
+## **Ejercicios**
+
+### **Ejercicio 1.** Elaborar un Script de R (Archivo .R)
+
+Elabore un archivo o file con extensión **.R** usando la barra de herramientas de **Rstudio**. Selecciona **File > New file > R script**. Utilice el siguiente ejemplo para completar la información de **metadatos** del script.
+
+    # ----------------------------------------------------------  
+    # Clase 4 - Manipulación de datos con dplyr.   
+    # Su nombre. 
+    # Fecha de hoy. 
+    # Curso R para Biociencias. 
+    # ----------------------------------------------------------  
+
+Luego, guarde inmediatamente su script como **script_3_nombre_apellido.R**.
+
+### **Ejercicio 2.** **Configuración del Script**
+
+```{r setup, include=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+Cargue las librerías **readxl**, **stats**,**dplyr**, **tidyr** y **ggplot2** usando la función **_library()_**.
+
+```{r, include=FALSE, message=FALSE}
+library(readxl)
+library(stats)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+### **Ejercicio 3.** **Manipular datos de producción e importación de ovas** 
+
+En el siguiente ejercicio deberá realizar la manipulación de un pequeño conjunto de datos de producción e importación de ovas de salmón. En cual se describe en la tabla 1. 
+
+```{r, echo=FALSE}
+ovas <- read_excel("Ovas.xlsx")
+  
+knitr::kable(ovas, col.names=c("Especie", "Año", "Producción nacional", "Ovas disponibles", "Importacion"), caption = "Tabla 1. Producción nacional e importación de ovas.")
+```
+
+**a)** **Crear objeto data.frame y transformar variables.**
+
+Cree un objeto llamado **ovas** e importe dentro de este objeto el set de datos **Ovas.xlsx**. Use la función **_read_excel()_** de la librería **readxl**. Explore el set de datos ovas usando las funciones **head()** y **str()** y luego transforme la variable **Especie** y **Year** a factor usando **as.factor()**. Note que el nombre de las columnas está abreviado y en algunos casos en inglés.
+
+```{r}
+ovas <- read_excel("Ovas.xlsx")
+head(ovas)
+str(ovas)
+ovas$Especie <- as.factor(ovas$Especie)
+ovas$Year <- as.factor(ovas$Year)
+str(ovas)
+```
+
+**b)** **Filtrar información por algún criterio de clasificación** 
+
+Del conjunto de datos **ovas** seleccione solo la información del año **2017**. Para ello combine una tubería **%>%** con la función **_filter()_**, dentro de filter use el argumento *Year == 2017*.
+
+```{r}
+ovas %>%
+  filter(Year == 2017)
+```
+
+**c)** **Filtrar información de la base de datos por año y especie** 
+
+Del set de datos **ovas** seleccione solo la información del año **2016** y de la Especie **Salmón del Atlántico**. Para ello combine una tubería **%>%** con la función **_filter()_**. Dentro de filter use el argumento *Year == 2016* y combine con un argumento similar que permita seleccionar a la Especie **Salmón del Atlántico**.
+
+```{r}
+ovas %>%
+  filter(Year == 2016, Especie == "Salmón del Atlántico")
+```
+
+**d)** **Calcular medidas resumen** 
+
+Del conjunto de datos **ovas** seleccione ahora la Especie **Trucha Arcoiris** usando la función **_filter()_**. Combine con una nueva tubería y usando la función **_summarize()_** calcule la media de la variable **ProdNac** como **mean(ProdNac)**.
+
+```{r}
+ovas %>%
+  filter(Especie == "Trucha Arcoiris")%>%
+  summarize(mean(ProdNac))
+```
+Una de las grandes ventajas de la función **_summarize()_** es que puede calcular varias medidas de resumen simultaneamente. Del conjunto de datos **ovas** seleccione ahora la Especie **Trucha Arcoiris** usando la función **_filter()_**. Combine con una nueva tubería y usando la función **_summarize()_** calcule la media de todas las variables continuas **ProdNac**, **DispOvas** e **Importacion**.
+
+```{r}
+ovas %>%
+  filter(Especie == "Trucha Arcoiris")%>%
+  summarize(mean(ProdNac), mean(DispOvas), mean(Importacion))
+```
+Para la misma especie **Trucha Arcoiris**, ahora calcule la media de **mean**, la desviación estandar **sd**, y los valores máximos **max** y mínimos **min** de la variable **ProdNac**.
+
+```{r}
+ovas %>%
+  filter(Especie == "Trucha Arcoiris")%>%
+  summarize(mean(ProdNac), sd(ProdNac), max(ProdNac), min(ProdNac))
+```
+Ahora, cambie los títulos de cada columna agregando al código anterior un nuevo nombre entre comillas. Siga este ejemplo para la primera columna **summarize("Media" = mean(ProdNac)** y complete para las columnas restantes.
+
+```{r}
+ovas %>%
+  filter(Especie == "Trucha Arcoiris")%>%
+  summarize("media"=mean(ProdNac), "sd"=sd(ProdNac), "Máximo"=max(ProdNac), "Mínimo"=min(ProdNac))
+```
+
+Finalmente, para publicar una tabla resumen de forma profesional debemos crear un objeto, almacenar alguna de nuestras tablas resumen en el y luego imprimirla con el comando **knitr::kable()** de la librería **knitr**. Incluya dentro de **knitr::kable()** una leyenda de la tabla con el argumento *caption=""*.
+
+
+```{r}
+Table <- ovas %>%
+  filter(Especie == "Trucha Arcoiris")%>%
+  summarize("media"=mean(ProdNac), "sd"=sd(ProdNac), "Máximo"=max(ProdNac), "Mínimo"=min(ProdNac))
+
+knitr::kable(Table, caption = "Tabla 1. Resumen de producción nacional de ovas de trucha")
+
+```
+
+
+### **Ejercicio 4.** **Graficar datos de producción e importación de ovas** 
+
+**a)** **Graficar diagramas de barras con ggplot()** 
+
+Con el conjunto de datos **ovas** elabore un gráfico de barras con la función **ggplot()** + el argumento **geom_col()**. Use como variable de clasificación (x) **Especies** y como variable respuesta (y) la **ProdNac**. 
+
+```{r, echo=TRUE}
+ ggplot(ovas, aes(x= Especie, y= ProdNac))+
+   geom_col()
+```
+
+En la gráfica anterior, coloree la variable especie usando el argumento **fill=**.
+```{r}
+ ggplot(ovas, aes(x= Especie, y= ProdNac, fill=Especie))+
+   geom_col()
+```
+
+**b)** En la gráfica anterior modifique la leyenda del eje **y** con el comando **labs()**. Nombre el eje **y** como "Producción Nacional" e incluya un pie de figura "Fuente: Servicio de Pesca y acuicultura" con el argumento **captions**.
+
+```{r}
+ ggplot(ovas, aes(x= Especie, y= ProdNac, fill=Especie))+
+   geom_col()+
+  labs(y= "Producción Nacional de ovas",
+       caption = "Fuente: Servicio de Pesca y Acuicultura")
+```
+
+**c)** Para separar los datos de cada año incluya a la gráfica anterior el comando **facet_wrap(~ Year)**.
+
+```{r fig.width= 8, fig.align='center'}
+ ggplot(ovas, aes(x= Especie, y= ProdNac, fill=Especie))+
+   geom_col()+
+  labs(y= "Producción Nacional",
+       caption = "Fuente: Servicio de Pesca y Acuicultura")+
+   facet_wrap(~ Year)
+```
+
+**d)** Finalmente, para evitar que las etiquetas de las especies queden sobrepuestas, incluya un último argumento para rotarlos levemente **guides(x = guide_axis(angle = 45))** 
+
+```{r ovas, fig.width= 8, fig.align='center'}
+ ggplot(ovas, aes(x= Especie, y= ProdNac, fill=Especie))+
+   geom_col()+
+  labs(y= "Producción Nacional",
+       caption = "Fuente: Servicio de Pesca y Acuicultura")+
+   facet_wrap(~ Year)+
+  guides(x = guide_axis(angle = 45))
+```
+
+### **Ejercicio 5.** **Generar variables derivadas** 
+
+La manera más simple de generar e incluir una variable derivada en un data.frame es creando una nueva columna. 
+
+**a)** Primero obtenga la proporción de la variable **ProdNac** (producción nacional de ovas) usando la función **prop.table()**.
+
+```{r}
+prop.table(ovas$ProdNac)*100
+
+```
+
+**b)** Luego cree una nueva columna llamada **Prop_ProdNac** en el objeto **ovas** y agregue la proporción calculada a este data.frame. 
+
+```{r}
+ovas$Prop_ProdNac <- prop.table(ovas$ProdNac)*100
+ovas
+```
+
+
+**c)** Otra forma de crear una variable derivada es con la función **mutate()** de la librería **dplyr**. Usando el objeto **ovas** y una tubería **%>% ** cree una variable derivada llamada **Prop_ovas_importadas** con la proporción de la variable **Importacion**.
+
+```{r}
+ovas %>% mutate(Prop_Ovas_importadas = prop.table(Importacion))
+```
+
+
+### **Ejercicio 6.** **Agrupar y resumir variables ** 
+
+La función **group_by()** es muy útil para resumir información estadística agrupando por un conjunto de filas, por ejemplo, para agrupar y resumir niveles de un factor.
+
+**a)** Use dos tuberías, primero para seleccionar año (Year) desde el objeto **ovas** usando la función **group_by()** y luego para calcular el promedio (mean) de la producción nacional de ovas usando **summarize()**.
+
+```{r}
+ovas %>%  group_by(Year) %>% summarize(mean = mean(ProdNac))
+```
+**b)** Ahora use dos tuberías, para seleccionar desde el objeto **ovas** la variable **Especies** usando la función **group_by()** y luego para calcular **mean()**, **sd()** y **n()** de la producción nacional de ovas usando **summarize()**.
+
+```{r}
+ovas %>% group_by(Year) %>% summarize(mean = mean(ProdNac), sd = sd(ProdNac), n=n())
+```
+
+**c)** Finalmente, cree una tabla resumen de la producción nacional de ovas por año usando la función **knitr::kable()**. Incluya una leyenda de la tabla con el argumento *caption=""*.
+
+
+```{r}
+Table_ovas <- ovas %>% group_by(Year) %>% summarize(mean = mean(ProdNac), sd = sd(ProdNac), n=n())
+
+knitr::kable(Table_ovas, caption = "Tabla 1. Resumen de producción nacional de ovas por año")
+
+```
