@@ -1,0 +1,179 @@
+---
+title: "Análisis de ordenes de compra Megacentro - 2021"
+author: "Yovanessa Arrué | Pontificia Universidad Católica de Valparaíso | <yovanessa.arrue@pucv.cl>"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: 
+  pdf_document: default
+---
+
+## INTRODUCCIÓN
+
+
+```{r setup, include=FALSE}
+# Este bloque de códigos se llama setup y configura el resto de los bloques.
+
+# El comando include=FALSE da la instrucción de que este bloque  aparezca en el reporte.
+
+# El comando echo=TRUE da la instrucción de que los siguientes bloques
+# si aparezcan en el reporte.
+
+knitr::opts_chunk$set(echo = TRUE)
+
+# Instala lbrerías
+library(knitr)
+library(tidyr)
+```
+
+
+\newpage
+
+## PRUEBAS ESTADÍSTICAS NO PARAMÉTRICAS
+
+Las pruebas estadísticas no paramétricas son un conjunto diverso de pruebas estadísticas que se aplican usualmente para variables cuantitativas que no cumplen con el supuesto de normalidad y para variables cualitativas. El concepto de “no paramétrico” a veces es confuso, pues los métodos no paramétricos si estiman y someten a prueban hipótesis usando parámetros, pero no los de distribución normal.
+
+### PRUEBA DE CORRELACIÓN DE SPEARMAN
+
+La prueba de correlación de Spearmanse utiliza para estudiar la asociación de dos variables, cuando no se cumple uno o varios supuestos de la correlación paramétrica:    
+
+1 Las variables X e Y no son continuas.  
+2 No existe relación lineal.  
+3 La distribución conjunta de (X, Y) no es una distribución Bivariable normal.  
+
+En el siguiente ejemplo se realizará una prieba no paramétrica de Spearman al set de datos de la siguiente tabla.
+```{r Spearman data}
+# Este bloque de códigos se llama resumen Spearman test.
+
+# Crea objetos X e Y 
+X <- c(942,101,313,800)
+Y <- c(13,14,18,10)
+cor_data <- data.frame(X,Y)
+
+# Imprime una tabla con knitr
+
+kable(cor_data, caption = "Set de datos de correlación", col.names = c("weight","lice"))
+```
+
+La hipótesis que se someterá a prueba es la siguiente.
+
+**H~0~**: weight y lice son mutuamente independientes, $\rho$ = 0  
+**H~1~**: weight y lice no son mutuamente independientes, $\rho$ $\ne$ 0  
+
+
+```{r Spearman test}
+# Realiza test de correlación
+cor_test <- cor.test(X,Y, method = "spearman",
+         alternative = "two.sided")
+```
+
+La correlación de spearman entre **weight** y **lice** toma un valor de **$\rho$ = `r cor_test$estimate`**, no obstante aquello, no es posible rechazar la hipótesis nula pues el valor de **p= `r round(cor_test$p.value,2)`**.
+
+\newpage
+
+### COMPARACIÓN DE DOS O MÁS MUESTRAS
+
+**2 Muestras independientes**
+
+La prueba de Mann-Whitney o Wilcoxon sirve para comparar dos muestras independientes con idéntica distribución, con diferentes medianas y cuando no se cumple el supuesto de normalidad o de variable continua.
+
+```{r, echo=TRUE}
+# Minutos de conducta agresiva (t= solo machos; c= machos y hembras)
+
+t <- c(9, 12, 13)
+c <- c(0, 4, 6)
+m_data <- data.frame(t,c)
+
+
+# Imprime una tabla con knitr
+kable(m_data, caption = "Set de datos de correlación", 
+      col.names = c("tratamiento","control"))
+
+```
+
+```{r}
+# Realiza prueba de Mann-Whitney
+wil_test <- wilcox.test(t, c, alternative = "g",
+            paired = FALSE)
+
+wil_test
+```
+
+**2 Muestras pareadas**
+
+La prueba de Wilcoxon también sirve para comparar dos muestras pareadas.
+
+```{r, echo=TRUE}
+# Nivel de hormona pre y post maduración
+pre <- c(45, 41, 47, 52)
+post <- c(49, 50, 52, 50)
+
+# Realiza prueba de Wilcoxon
+wilcox.test(post - pre, alternative = "greater")
+# no es necesario indicar muestras pareadas
+# pues estamos haciendo la resta en la función.
+
+```
+
+**Mas de 2 muestras independientes**
+
+La prueba de Kruskal - wallis es el gold standar para comparar múltiples muestras con idéntica distribución, con diferentes medianas y sin normalidad.
+
+```{r, echo=TRUE}
+
+# Score de calidad de producto congelado 1 (peor) - 9 (mejor)
+
+d0 <- c(9,8,9,8) # day0
+d4 <- c(7,7,6,8) # day4 
+d8 <- c(6,5,5,6) # day8
+
+calidad <- data.frame(d0, d4, d8)
+
+kable(calidad, caption = "Score de calidad por día", 
+      col.names = c("día 0","día 4", "día 8"))
+
+```
+
+
+```{r datos calidad}
+
+# Este bloque de códigos se llama datos calidad.
+
+grafica <- gather(data = calidad, key = "Dias", value = "Score de calidad", 1:3)
+
+
+
+kable(grafica, caption = "Score de calidad por día")
+
+```
+
+\newpage
+
+También puedes incluir y dar nombre a las gráficas en el mismo bloque de código usando el comando **fig.cap=""**.
+
+```{r gráfica calidad, echo=FALSE, fig.cap="Calidad de producto a diferentes tiempos de congelación"}
+
+# Este bloque de códigos se llama gráfica gráfica calidad.
+
+# El comando echo=FALSE impide que se imprima el bloque en el reporte.
+
+# El comando fig.cap="" sirve para agregar el nombrar y numerar la figura.
+
+boxplot(grafica$`Score de calidad` ~ grafica$Dias, xlab = "Días de congelamiento", 
+        ylab = "Score de calidad")
+
+```
+
+
+```{r}
+kruskal.test(list(d0, d4, d8))
+```
+
+
+### Imprimir el reporte
+
+Finalmente, para poder generar un reporte debes presionar el **triángulo negro** que está junto a la palabra **Knit** en la parte superior de este documento. Si presionas **Knit to pdf**, esto indicará a la librería **knitr** que debe leer el presente documento, interpretar y ejecutar el metadata, el texto de bajo nivel y los diferentes bloques de código para elaborar un reporte pdf.
+
+Para finalizar, puedes generar dos reportes adicionales uno en formato html y otro en formato word. Compare los documentos e identifique sus diferencias.
+
+Para más detalles de como trabajar con Rmarkdown investigue el siguiente [**enlace**](https://swcarpentry.github.io/r-novice-gapminder-es/15-knitr-markdown/).
+
+
