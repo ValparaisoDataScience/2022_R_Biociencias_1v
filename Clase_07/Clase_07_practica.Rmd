@@ -1,0 +1,153 @@
+---
+title: "Práctica de Regresión lineal simple y evaluación de supuestos"
+author: Dra. María Angélica Rueda | Pontificia Universidad Católica de Valparaíso
+  | <maria.rueda.c@pucv.cl>
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+subtitle: Curso Análisis de datos con R para Biociencias
+---
+
+```{r setup, include=TRUE, warning=FALSE, message=FALSE, error=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+# Cargue las librerías
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(UsingR)
+library(ggpmisc)
+library(knitr)
+library(car)
+library(lmtest)
+```
+
+# **Ejemplo de calentamiento global**
+
+## **Relación entre anomalia de la temperatura global vs CO2**
+Calentamiento global [Fuente: climate.gov](https://www.climate.gov/maps-data/dataset/global-temperature-anomalies-graphing-tool)
+
+```{r, echo=FALSE, out.width = '75%', message=FALSE, fig.align='center'}
+Global_warming <- read_excel("Global_Warming.xlsx")
+formula1 <- y ~ x
+Global_warming$Year <- as.factor(Global_warming$Year)
+Global_warming$CO2_ppm <- as.numeric(Global_warming$CO2_ppm)
+Global_warming$`Global Temperature Anomalies` <- as.numeric(Global_warming$`Global Temperature Anomalies`)
+
+My_Theme = theme(
+  axis.title.x = element_text(size = 20),
+  axis.text.x = element_text(size = 20),
+  axis.title.y = element_text(size = 20),
+  axis.text.y = element_text(size = 20))
+
+
+s <- Global_warming %>% ggplot(aes(x = CO2_ppm, y = `Global Temperature Anomalies`)) + 
+   geom_point() +
+   stat_smooth(method = "lm", col = "red", show.legend=TRUE)+  stat_poly_eq(aes(label = paste0("atop(", ..eq.label.., ",", ..rr.label.., ")")), formula = formula1, parse = TRUE, size = 8)+scale_x_continuous(n.breaks = 8)
+s+My_Theme
+```
+
+# REGRESIÓN LINEAL CON R: COEFICIENTES
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, out.width = '80%'}
+reg <- lm(`Global Temperature Anomalies`~ CO2_ppm, 
+          data = Global_warming) # Ajusta un modelo de regresión lineal simple
+summary(reg) # Muestra de forma resumida los resultados obtenidos por el modelo ajustado
+```
+
+# REGRESIÓN LINEAL CON R: PRUEBA DE F
+
+Anova de la regresión.
+```{r, echo=TRUE}
+anova(reg) %>% kable()
+```
+
+# EXTRAER INFORMACIÓN DE LA REGRESIÓN LINEAL
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+
+summary(reg$residuals) # extrae los residuos del modelo de regresión lineal simple
+summary(reg)$sigma # extrae la varianza residual del modelo de regresión lineal simple
+summary(reg)$r.squared # extrae el R cuadrado (Coeficiente de determinación)
+summary(reg)$adj.r.squared # extrae el R cuadrado ajustado
+
+```
+
+# PREDICCIÓN LINEAL DEL NIVEL DEL MAR
+
+Predicción de la anomalía próximos años
+
+```{r, echo=TRUE}
+predict.lm(reg, 
+           newdata=data.frame(CO2_ppm=c(410,420,430)), 
+           interval="confidence") # Realiza predicciones de nuevos datos
+```
+
+
+# SUPUESTOS DE LA REGRESIÓN LINEAL SIMPLE
+
+- ¿Cuales son los supuestos?  
+Independencia.  
+Linealidad entre variable independiente y dependiente.  
+Homocedasticidad.  
+Normalidad.  
+
+- ¿Por qué son importantes?  
+Para validar el resultado obtenido.  
+En caso de incumplimiento se pueden transformar datos o elaborar otros modelos (Regresión logística).  
+
+
+# INDEPENDENCIA: MÉTODO GRÁFICO
+
+**H~0~**: Los residuos son independientes entre sí. 
+
+**H~A~**: Los residuos no son independientes entre sí (existe autocorrelación).
+
+```{r, echo=TRUE,out.width = '80%', fig.align='center'}
+plot(reg$residuals)
+abline(h=0, col="red")
+
+```
+
+# LINEALIDAD: MÉTODO GRÁFICO
+
+**H~0~**: Hay relación lineal entre la variable regresora y la variable predictora.
+
+**H~A~**: No hay relación lineal entre la variable regresora y la variable predictora. 
+
+```{r, echo=TRUE,out.width = '80%', fig.align='center'}
+plot(Global_warming$CO2_ppm,Global_warming$`Global Temperature Anomalies`, xlab="CO2", ylab = "Anomalias en la temperatura global")
+```
+
+
+# HOMOGENEIDAD DE VARIANZAS: MÉTODO GRÁFICO
+
+**H~0~**: La varianza de los residuos es constante.
+
+**H~A~**: La varianza de los residuos no es constante.
+
+```{r, echo=TRUE,out.width = '80%', fig.align='center'}
+plot(reg, which=3)
+```
+
+
+# NORMALIDAD: GRÁFICO DE CUANTILES
+
+**H~0~**: Los residuos tienen distribución normal.  
+
+**H~A~**: Los residuos no tienen distribución normal.  
+
+```{r, echo=TRUE,out.width = '80%', fig.align='center'}
+qqPlot(reg) # library(car)
+```
+
+# VALORES ATÍPICOS
+
+Una observación se puede considerar influyente (valor atípico) si tiene un valor de distancia de Cook mayor a 1. 
+```{r, echo=TRUE, out.width = '80%', fig.align='center'}
+plot(reg, which=4)
+```
+
+
