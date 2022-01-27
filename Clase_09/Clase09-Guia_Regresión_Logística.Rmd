@@ -1,0 +1,180 @@
+---
+title: "Regresión logística"
+subtitle: 'Curso Análisis de datos con R para Biociencias'
+author:
+ name: Dr. José A. Gallardo y Dra. María Angélica Rueda.
+ affiliation: Pontificia Universidad Católica de Valparaíso
+ email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    code_folding: hide
+  word_document: default
+  pdf_document: default
+---
+
+<style>
+#TOC {
+  color: black;
+  font-familiy: Calibri;
+  font-size: 14px;
+  border-color: #708090; 
+}
+body {
+   color: black;
+   font-familiy: Calibri;
+}
+
+pre {
+  color: black;
+  background-color: #F8F8FF;
+}
+# header {
+  color: #800000;
+  font-familiy: Calibri;
+  background-color: #F5F5F5;
+  opacity: 0.8;
+  font-size: 16px;
+}
+</style>
+
+### REGRESIÓN LOGÍSTICA
+
+La regresión logística no requiere de ciertas condiciones como linealidad, normalidad y homocedasticidad de los residuos que sí lo son para la regresión lineal. Las principales condiciones que este modelo requiere son:
+
+* Respuesta binaria: La variable respuesta debe ser binaria.
+
+* Independencia: las observaciones deben ser independientes.
+
+* Multicolinealidad: se requiere de muy poca a ninguna multicolinealidad entre los predictores (para regresión logística múltiple).
+
+* Linealidad: entre la variable independiente y el logaritmo natural de odds **(Cociente de chances)**.
+
+
+#### **Objetivos de aprendizaje**
+
+Los objetivos de aprendizaje de esta guía son:
+
+**1**. - Ajustar modelos de regresión logística. 
+
+**2**. - Elaborar un reporte dinámico en formato pdf con **[Rmarkdown](https://rmarkdown.rstudio.com/)**.
+
+# **Ejercicios**
+
+## Estudio de caso: Maduración Salmón del Atlántico
+
+En este estudio de caso trabajaremos con un set de datos de 120 observaciones extraídas del set de datos original del paper de Fraser et.al., 2019. [Fuente: Fraser et.al 2019](https://www.sciencedirect.com/science/article/pii/S0044848619315546?via%3Dihub) 
+
+La variable respuesta se denomina **Mature** y las variables predictoras **Length** y **Mass**.
+
+**Mature:** Estado de maduración de los salmones
+**Lenght:** Tamaño de los salmones
+**Mass:** Peso corporal
+
+## **Ejercicio 1.** Elaborar y configurar Reporte en formato .Rmd
+
+Elabore un documento .Rmd y configure su reporte para exportar en .pdf. Instale solo las librerías que utilice para el análisis de los datos.
+
+```{r setup, include=TRUE, warning=FALSE,message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(ggplot2)
+library(multcomp)
+library(psych)
+library(car)
+library(readr)
+library(lmtest)
+library(boot)
+```
+
+Ejecute cada uno de los siguientes ejercicios en uno o más bloques de códigos diferentes. Sea ordenado y documente su reporte adecuadamente.
+
+## **Ejercicio 2.** Exploratorio set de datos
+
+Importe el set de datos **Salmon_maturation_data.xlsx** y realice un análisis exploratorio de datos. 
+
+Incluya: 
+
+**a).** Resumen estadístico de todas las variables.
+
+```{r, warning=FALSE, message=FALSE}
+Salmon_maturation_data <- read_excel("Salmon_maturation_data.xlsx")
+summary(Salmon_maturation_data)
+
+```
+
+**b).** Ajuste un modelo de **Regresión logística nulo** donde la variable **Mature** es la variable respuesta y no hay variable regresora (Colocar 1) después del **~**.
+
+```{r}
+modelonulo <- glm(Mature ~ 1, 
+                family= binomial, data = Salmon_maturation_data)
+summary(modelonulo)
+```
+
+**c).** Ajuste un modelo de **Regresión logística simple** donde la variable **Mature** es la variable respuesta y la variable **Length** es la variable predictora. Use la función **glm()** y haga el **summary()** del modelo.
+
+```{r}
+modelo1 <- glm(Mature ~ Length, 
+                family= binomial, data = Salmon_maturation_data)
+summary(modelo1)
+```
+
+**d).** Compare los modelos nulo y de regresión logística simple de los items anteriores usando el criterio de AIC. Use la función **AIC()**. Diga según el criterio de AIC ¿Cuál sería el mejor modelo?
+
+```{r}
+AIC(modelonulo,modelo1)
+```
+
+**e).** Compare los modelos nulo y de regresión logística simple haciendo un anova. Use la función **anova(modelonulo, modelo1,test ='Chisq')**. Diga cuál sería el mejor modelo y porqué?
+
+```{r}
+anova(modelonulo,modelo1,test ='Chisq')
+```
+
+## **Ejercicio 3.** Estudio de caso: Datos cangrejos
+
+El set de **Datos_cangrejos.xslx** son 173 datos de cangrejos herradura hembras de la librería de R (glmbb) llamada **_crabs_**. Donde se les midieron 6 variables. Ver descripción de dataset en <https://cran.r-project.org/web/packages/glmbb/glmbb.pdf>
+
+**a).** Resumen estadístico de todas las variables.
+```{r}
+Datos_cangrejos <- read_excel("Datos_cangrejos.xlsx")
+summary(Datos_cangrejos)
+```
+
+**b).** Ajuste un modelo de **Regresión logística nulo** donde la variable **y** es la variable respuesta y no hay variable regresora (Colocar 1) después del **~**.
+
+```{r}
+modelonulo1 <- glm(y ~ 1, 
+                family= binomial, data = Datos_cangrejos)
+summary(modelonulo1)
+```
+
+**c).** Ajuste un modelo lineal general (**Regresión logística simple**) donde la variable **y** es la variable respuesta y la variable **weight** es la variable predictora. Use la función **glm()** y haga el **summary()** del modelo.
+
+```{r}
+modelo3 <- glm(y ~ weight, 
+                family= binomial, data = Datos_cangrejos)
+summary(modelo3)
+```
+
+**d).** Compare los modelos nulo y de regresión logística simple de los items anteriores usando el criterio de AIC. Use la función **AIC()**. Diga según el criterio de AIC ¿Cuál sería el mejor modelo?
+
+```{r}
+AIC(modelonulo1,modelo3)
+```
+
+**e).** Compare los modelos nulo y de regresión logística simple de los items anteriores usando el criterio de BIC. Use la función **BIC()**. Diga según el criterio de BIC ¿Cuál sería el mejor modelo?
+**Nota: Un valor menor de BIC indica mejor modelo.**
+
+```{r}
+BIC(modelonulo1,modelo3)
+```
+
+**f).** Compare los modelos nulo y de regresión logística simple haciendo un anova. Use la función **anova(modelonulo1, modelo3,test ='Chisq')**. Diga cuál sería el mejor modelo y porqué?
+
+```{r}
+anova(modelonulo1,modelo3,test ='Chisq')
+```

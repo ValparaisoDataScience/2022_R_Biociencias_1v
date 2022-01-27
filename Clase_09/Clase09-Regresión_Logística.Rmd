@@ -1,0 +1,373 @@
+---
+title: "Clase 09 Regresión Logística"
+author: Dra. María Angélica Rueda.  <maria.rueda.c@pucv.cl>  |  Pontificia Universidad
+  Católica de Valparaíso
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  beamer_presentation: default
+  ioslides_presentation:
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 7
+    latex_engine: xelatex
+    pdf_document: null
+    template: quarterly_report.html
+  slidy_presentation: default
+subtitle: 'Curso Análisis de datos con R para Biociencias'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(car)
+library(lmtest)
+library(psych)
+library(readxl)
+library(nlme)
+library(lme4)
+library(stats)
+library(boot)
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(ggpmisc)
+library(knitr)
+library(car)
+library(lmtest)
+library(psych)
+library(gridExtra)
+library(nortest)
+library(sjPlot)
+library(lme4)
+library(reshape2)
+```
+
+# **PLAN DE LA CLASE**
+
+**1.- Introducción**
+    
+- Regresión polinomial.
+
+- Modelos de Regresión logística.
+
+- Ejemplo de modelo Regresión logística.
+
+- Interpretación de modelos de regresión con R.
+
+**2.- Práctica con R y Rstudio cloud**
+
+- Ajustar modelos de regresión logística.
+
+- Realizar gráficas avanzadas con ggplot2.
+
+- Elaborar un reporte dinámico en formato pdf.
+
+
+# **REGRESIÓN POLINOMIAL**
+
+Sea $Y$ una variable respuesta continua y la variable predictora $X$, un modelo de regresión polinomial se puede representar como,
+ 
+$$Y = \beta_{0} + \beta_{1} X + \beta_{2} X^2 + ... + \beta_{h} X^h + \epsilon$$
+donde $h$ es el grado del polinomio.
+
+# **REGRESIÓN POLINOMIAL**
+
+En este ejemplo vamos a comparar la regresión lineal simple con variable linealizada *_vs_* la regresión polinomial con término cuadrático.
+
+```{r, message=FALSE, out.width = '80%', fig.align='center'}
+clearance <-  read_excel("ParticleClearance.xlsx", sheet = 1)
+
+# Create data filters
+mussel <- filter(clearance, sample == "mussel")
+control <- filter(clearance, sample == "control")
+```
+
+
+```{r, out.width = '75%', message=FALSE, fig.align='center'}
+My_Theme = theme(
+  axis.title.x = element_text(size = 20),
+  axis.text.x = element_text(size = 20),
+  axis.title.y = element_text(size = 20),
+  axis.text.y = element_text(size = 20))
+
+microplot <- ggplot(data = mussel, aes(x = time, y = microparticle_concentration)) +
+  geom_point(position = position_jitter(w = 0, h = 0.1) ) +
+  labs(x = "Time (minutes)", y = expression(Concentration~microparticles~ml^-1)) +
+  scale_shape_manual(values=c(1,2)) +
+  stat_smooth(method='loess',formula=y~x, se=T)+
+  scale_color_brewer(palette="Set1") + 
+  theme(legend.position="none") +
+  theme(panel.border=element_blank(), axis.line=element_line())
+microplot+My_Theme
+```
+
+# **REGRESIÓN LINEAL SIMPLE: RECORDATORIO** 
+
+**Modelo 1:** 
+
+**log_microparticle_concentration** = $\beta_{0} + \beta_{1} time + \epsilon$
+
+```{r}
+reg_mussel <- lm(log_microparticle_concentration ~ time, data=mussel)
+
+summary(reg_mussel)$coef %>% kable()
+
+```
+
+$R^2$ = `r  round(summary(reg_mussel)$r.squared,2)`, *p-val* = `r anova(reg_mussel)$'Pr(>F)'[1]`
+
+
+# **REGRESIÓN POLINOMIAL CON TÉRMINO CUADRÁTICO**
+
+**Modelo 2:** 
+
+**log_microparticle_concentration** = $\beta_{0} + \beta_{1} time + \beta_{2} {time}^2 + \epsilon$
+
+```{r}
+reg_mussel_2 <- lm(log_microparticle_concentration ~ poly(time,2), data=mussel)
+
+summary(reg_mussel_2)$coef %>% kable()
+
+```
+
+$R^2$ = `r  round(summary(reg_mussel_2)$r.squared,2)`, *p-val* = `r anova(reg_mussel_2)$'Pr(>F)'[1]`
+
+# **COMPARACIÓN DE MODELOS** 
+
+* Modelo 1: 
+
+**log_microparticle_concentration** = $\beta_{0} + \beta_{1} time + \epsilon$
+
+* Modelo 2: 
+
+**log_microparticle_concentration** = $\beta_{0} + \beta_{1} time + \beta_{2} {time}^2 + \epsilon$
+
+```{r}
+anova(reg_mussel,reg_mussel_2) %>% kable()
+```
+
+# **REGRESIÓN LOGÍSTICA**
+
+La regresión logística no requiere de ciertas condiciones como linealidad, normalidad y homocedasticidad de los residuos que sí lo son para la regresión lineal. Las principales condiciones que este modelo requiere son:
+
+* Respuesta binaria: La variable respuesta debe ser binaria.
+
+* Independencia: las observaciones deben ser independientes.
+
+* Multicolinealidad: se requiere de muy poca a ninguna multicolinealidad entre los predictores (para regresión logística múltiple).
+
+* Linealidad: entre la variable independiente y el logaritmo natural de odds **(Cociente de chances)**.
+
+
+# **ESTUDIO DE CASO 2: MADURACIÓN EN SALMÓN DEL ATLÁNTICO**
+
+En este estudio de caso trabajaremos con un subconjunto de la base de datos relacionada a la maduración en salmones machos (n=90). 
+
+|  **Variable** | **Descripción**| 
+|:-------------|:------------------|
+| **Fish** | Identificador del salmón|
+| **Gonad** | Peso de gónada |
+| **Maturation** | estado de maduración (1: maduro) o (0: inmaduro) | 
+
+
+```{r, echo=FALSE}
+maduracion <- read_excel("Maturation.xlsx")
+maduracion$Genotype <- as.factor(maduracion$Genotype)
+maduracion <- maduracion%>% 
+              select("Fish","Gonad","Maturation")
+mod_lineal <- lm(Maturation ~ Gonad, data = maduracion)
+mod_logit <- glm(Maturation ~ Gonad, 
+                family= binomial, data = maduracion)
+formula1 <- y ~ x
+
+```
+
+# **RELACIÓN ENTRE MADURACIÓN VS PESO DE GÓNADA**
+
+```{r, message=FALSE, warning=FALSE}
+
+My_Theme = theme(
+  axis.title.x = element_text(size = 20),
+  axis.text.x = element_text(size = 20),
+  axis.title.y = element_text(size = 20),
+  axis.text.y = element_text(size = 20))
+p<- ggplot(data = maduracion, aes(x = Gonad, y = Maturation)) +
+  geom_point(aes(color = as.factor(Maturation)), shape = 1) + 
+  theme(axis.text.x = element_text(size = 10,face="bold",colour="black"))+
+  theme(axis.text.y = element_text(size = 10,face="bold",colour="black"))+
+  theme_bw()  +
+  labs(x= "Peso de gónada", y = "Maduración")+
+  theme(legend.position = "none")+ 
+  theme(panel.border=element_blank(), axis.line=element_line())
+p+My_Theme
+```
+
+# **RELACIÓN LINEAL ENTRE MADURACIÓN VS PESO DE GÓNADA**
+
+```{r, message=FALSE, warning=FALSE}
+q <- ggplot(data = maduracion, aes(x = Gonad, y = Maturation)) +
+  geom_point(aes(color = as.factor(Maturation)), shape = 1) + 
+  theme(axis.text.x = element_text(size = 10,face="bold",colour="black"))+
+  theme(axis.text.y = element_text(size = 10,face="bold",colour="black"))+
+  geom_smooth(method = "lm", color = "gray20", se = FALSE) +
+  stat_poly_eq(aes(label = paste0("atop(", ..eq.label.., ",", ..rr.label.., ")")), formula = formula1, parse = TRUE, size = 8)+
+  theme_bw()  +
+  labs(x="Peso de gónada",y = "Probabilidad de Maduración") +
+    scale_y_continuous(limits = c(0, 1)) +
+  theme(legend.position = "none")+
+  theme(panel.border=element_blank(), axis.line=element_line())
+q+My_Theme
+```
+
+# **MODELO LINEAL**
+
+**Maduración** = $\beta_{0} + \beta_{1}$ Peso de gónada + $\epsilon$
+
+```{r}
+mod_lineal <- lm(Maturation ~ Gonad, data = maduracion)
+summary(mod_lineal)$coef %>% kable()
+
+```
+
+$R^2$ = `r  round(summary(mod_lineal)$r.squared,2)`, *p-val* = `r anova(mod_lineal)$'Pr(>F)'[1]`
+
+# **RELACIÓN SIGMOIDEA ENTRE MADURACIÓN VS PESO DE GÓNADA**
+
+```{r,message=FALSE, warning=FALSE}
+# Representación gráfica del modelo.
+r <- ggplot(data = maduracion, aes(x = Gonad, y = Maturation)) +
+  geom_point(aes(color = as.factor(Maturation)), shape = 1) + 
+  theme(axis.text.x = element_text(size = 10,face="bold",colour="black"))+
+  theme(axis.text.y = element_text(size = 10,face="bold",colour="black"))+
+  stat_function(fun = function(x){predict(mod_logit,
+                                          newdata = data.frame(Gonad = x),
+                                          type = "response")}) +
+  theme_bw() +
+  labs(title = "Regresión logística", x="Peso de gónada",
+       y = "Probabilidad de Maduración") +
+  theme(legend.position = "none")+
+  theme(panel.border=element_blank(), axis.line=element_line())
+r+My_Theme
+```
+
+
+# **PREDICCIÓN MODELO LINEAL VS MODELO NO LINEAL**
+
+```{r,message=FALSE, warning=FALSE}
+# Representación gráfica del modelo.
+s <- ggplot(data = maduracion, aes(x = Gonad, y = Maturation)) +
+  geom_point(aes(color = as.factor(Maturation)), shape = 1) + 
+  theme(axis.text.x = element_text(size = 10,face="bold",colour="black"))+
+  theme(axis.text.y = element_text(size = 10,face="bold",colour="black"))+
+  geom_hline(aes(yintercept=0.50), color="red")+ 
+  stat_function(fun = function(x){predict(mod_logit,
+                                          newdata = data.frame(Gonad = x),
+                                          type = "response")}) +
+  theme_bw() +
+  labs(title = "Regresión logística", x="Peso de gónada",
+       y = "Probabilidad de Maduración") +
+  theme(legend.position = "none")+
+  theme(panel.border=element_blank(), axis.line=element_line())
+s+My_Theme
+```
+
+# **PREDECIR SI UN SALMÓN MADURA O NO PARA UN PESO DE GÓNADA DE 4**
+
+**CONSIDERANDO LA REGRESIÓN LINEAL**
+
+```{r, echo=FALSE}
+# Predicción con modelo lineal
+maduracion$madurar_lm <- predict(mod_lineal,maduracion,type="response")
+#Determinamos  que el salmón madura cuando haya una probabilidad de maduración superior al 50%
+maduracion$predic <- ifelse(maduracion$madurar_lm > 0.5,1,0)
+
+#Enfrentamos la predicción contra la realidad
+table(maduracion$predic,maduracion$Maturation)
+
+#Predecimos si un salmón madura o no para un peso de gónada de 4
+Prob.mad_lm <- data.frame(Gonad=4)
+Prediccion_lm <- predict(mod_lineal, Prob.mad_lm, type = "response")
+Prediccion_lm <- data.frame(Prediccion_lm)
+colnames(Prediccion_lm) <- c("Probabilidad de maduración")
+```
+
+
+```{r}
+
+Prediccion_lm%>% kable() 
+
+if (Prediccion_lm >= 0.5) {
+  print("Madura")
+}else{
+  print("No madura")
+}
+```
+
+
+# **PREDECIR SI UN SALMÓN MADURA O NO PARA UN PESO DE GÓNADA DE 4**
+
+**CONSIDERANDO LA REGRESIÓN LOGÍSTICA**
+
+```{r, echo=FALSE}
+maduracion$madurar <- predict(mod_logit,maduracion,type="response")
+
+maduracion$predic <- ifelse(maduracion$madurar > 0.5,1,0)
+
+#Enfrentamos la predicción contra la realidad
+table(maduracion$predic,maduracion$Maturation)
+
+#Predecimos si un salmón madura o no para un peso de gónada de 4
+
+Prob.mad <- data.frame(Gonad=4)
+Prediccion_logis <- predict(mod_logit, Prob.mad, type = "response")
+Prediccion_logis <- data.frame(Prediccion_logis)
+colnames(Prediccion_logis) <- c("Probabilidad de maduración")
+```
+
+
+```{r}
+
+Prediccion_logis%>% kable() 
+
+if (Prediccion_logis >= 0.5) {
+  print("Madura")
+}else{
+  print("No madura")
+}
+```
+
+
+# **REGRESIÓN LOGÍSTICA (MODELO NULO)**
+
+```{r, echo=TRUE}
+mod_nulo <- glm(Maturation ~ 1, 
+                family= binomial, data = maduracion)
+summary(mod_nulo)$coef %>% kable()
+```
+
+# **REGRESIÓN LOGÍSTICA SIMPLE**
+```{r, echo=TRUE}
+mod_logit <- glm(Maturation ~ Gonad, 
+                family= binomial, data = maduracion)
+summary(mod_logit)$coef %>% kable()
+```
+
+# **COMPARACIÓN DE MODELOS AIC**
+
+```{r, echo=TRUE}
+AIC(mod_nulo,mod_logit)%>% kable()
+```
+
+# **COMPARACIÓN DE MODELOS (ANOVA)**
+
+```{r}
+anova(mod_nulo,mod_logit, test ='Chisq')%>% kable()
+
+```
+
+# **RESUMEN DE LA CLASE**
+
+**1).** Revisión de conceptos: Regresión Logística.
+
+**2).** Construir y ajustar modelos de Regresión Logística.
+
+    
