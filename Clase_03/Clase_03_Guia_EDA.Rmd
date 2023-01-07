@@ -278,7 +278,7 @@ Incluya etiquetas en el eje x e y, de un color a su gráfica con el comando **co
 Responda: ¿Qué factor tiene una mayor influencia en la variable respuesta weight?
 
 ```{r}
-plot.design(mouse$weight~ mouse$sex * mouse$feed, xlab = "Factores", ylab="Weight", col="blue")
+plot.design(mouse$weight~ mouse$sex, mouse$feed, xlab = "Factores", ylab="Weight", col="blue")
 
 ```
 

@@ -32,7 +32,8 @@ library(psych)
 
 **1.- Introducción**
     
-- Modelo de regresión lineal múltiple
+- Modelo de regresión lineal múltiple.
+- Estudio de caso: transformación de variable respuesta.
 - El problema de la multicolinealidad
 - ¿Cómo seleccionar variables?
 - ¿Cómo comparar modelos?
@@ -80,10 +81,10 @@ control <- filter(clearance, sample == "control")
 
 [Fuente: Willer and Aldridge 2017](https://royalsocietypublishing.org/doi/10.1098/rsos.171142)
 
-# TASA DE ACLARACIÓN (PROXY DE CONSUMO DE PARTÍCULAS).
+# TASA DE ACLARACIÓN 
 
 Problemas: La concentración es discreta y la relación no es lineal.
-Tips: stat_smooth(method='loess',formula=y~x, se=T)
+
 
 ```{r, out.width = '75%', message=FALSE, fig.align='center'}
 My_Theme = theme(
@@ -102,7 +103,7 @@ microplot <- ggplot(data = mussel, aes(x = time, y = microparticle_concentration
   theme(panel.border=element_blank(), axis.line=element_line())
 microplot+My_Theme
 ```
-
+Tips: stat_smooth(method='loess',formula=y~x, se=T)
 
 # TRANSFORMACIÓN DE VARIABLE RESPUESTA.
 
@@ -210,7 +211,8 @@ head(sim_dat) %>% kable(digits=2)
 
 # MULTICOLINEALIDAD
 
-Correlaciones > 0,80 es problema. 
+Multicolinealidad: Correlación entre predictoras es > 0,80. 
+
 ```{r, ut.width = '75%', message=FALSE, fig.align='center'}
 # Crea panel de correlaciones para evaluar multicolinealidad
 pairs.panels(sim_dat)

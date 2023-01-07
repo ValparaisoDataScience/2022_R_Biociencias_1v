@@ -141,13 +141,19 @@ summary(snp.data)
 
 table(snp.data$Sex, snp.data$Geno)
 
+```
+
+**c).** Investigue el uso de la función tapply() y calcule la media del peso para los niveles de cada factor **Geno** y **Sex**.
+
+```{r}
+
 tapply(snp.data$weight, factor(snp.data$Geno), mean)
 
 tapply(snp.data$weight, factor(snp.data$Sex), mean)
+
 ```
 
-
-**c).** Histograma de la variable respuesta **weight**.
+**d).** Histograma de la variable respuesta **weight**.
 
 
 ```{r, warning=FALSE, message=FALSE}
@@ -174,7 +180,7 @@ p + geom_point() + xlab("Reference allele count") + geom_smooth(method=lm)
 
 lm.geno <- lm(weight ~ Geno, data = snp.data)
 summary(lm.geno)
-
+summary(lm.geno)$adj.r.squared
 ```
 
 **c).** Realice la predicción de la media poblacional de **weight** para los genotipos AA, AB y BB y la predicción del peso **weight** de tres nuevos individuos con genotipo AA, AB y BB usando la **función predict.lm**. ¿Qué tan buena son las predicciones obtenidas? Analice el R² ajustado y los intervalos de confianza.
