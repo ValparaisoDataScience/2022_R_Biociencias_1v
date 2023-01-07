@@ -42,7 +42,6 @@ My_Theme = theme(
   axis.title.y = element_text(size = 20),
   axis.text.y = element_text(size = 20))
 
-
 s <- Global_warming %>% ggplot(aes(x = CO2_ppm, y = `Global Temperature Anomalies`)) + 
    geom_point() +
    stat_smooth(method = "lm", col = "red", show.legend=TRUE)+  stat_poly_eq(aes(label = paste0("atop(", ..eq.label.., ",", ..rr.label.., ")")), formula = formula1, parse = TRUE, size = 8)+scale_x_continuous(n.breaks = 8)
@@ -111,6 +110,19 @@ abline(h=0, col="red")
 
 ```
 
+# INDEPENDENCIA: **PRUEBA DE DURBIN-WATSON**
+
+```{r, echo=TRUE}
+dwtest(`Global Temperature Anomalies`~ CO2_ppm, 
+       data = Global_warming,
+       alternative = c("two.sided"), 
+       iterations = 15)
+
+```
+**Interpretación**
+
+Como el p-valor (**0.03616**) es menor al nivel de significación ($\alpha$ =0.05) rechazamos la hipotesis nula. Por lo tanto, los residuos no son independientes, es decir, están correlacionados.
+
 # LINEALIDAD: MÉTODO GRÁFICO
 
 **H~0~**: Hay relación lineal entre la variable regresora y la variable predictora.
@@ -132,6 +144,14 @@ plot(Global_warming$CO2_ppm,Global_warming$`Global Temperature Anomalies`, xlab=
 plot(reg, which=3)
 ```
 
+# HOMOGENEIDAD DE VARIANZAS: **PRUEBA DE BREUSCH-PAGAN**
+
+```{r}
+bptest(reg)
+```
+**Interpretación**
+
+Como el p-valor (**0.5579**) es mayor al nivel de significación ($\alpha$ =0.05) no hay evidencia para rechazar la hipotesis nula. Por lo tanto, la varianza de los residuos es constante.
 
 # NORMALIDAD: GRÁFICO DE CUANTILES
 
@@ -143,11 +163,33 @@ plot(reg, which=3)
 qqPlot(reg) # library(car)
 ```
 
-# VALORES ATÍPICOS
 
-Una observación se puede considerar influyente (valor atípico) si tiene un valor de distancia de Cook mayor a 1. 
+# NORMALIDAD: **PRUEBA DE SHAPIRO-WILKS** 
+
+```{r, echo=TRUE}
+shapiro.test(x= rstudent(reg)) # Se hizo la prueba de normalidad con los residuos estudentizados
+```
+**Interpretación**
+
+Como el p-valor (**0.09589**) es mayor al nivel de significación ($\alpha$ =0.05) no hay evidencia para rechazar la hipotesis nula. Por lo tanto, los residuos tienen distribución normal.
+
+# NORMALIDAD: HISTOGRAMA DE RESIDUALES
+
+```{r, echo=TRUE, out.width = '90%', fig.align='center'}
+hist(x= rstudent(reg), main = "Histograma de residuales")  # Se hizo el histograma de los residuos estudentizados
+```
+
+
+# VALORES ATÍPICOS: DISTANCIA DE COOK
+
+Una observación se puede considerar influyente (valor atípico) si tiene un valor de **distancia de Cook mayor a 1**. 
 ```{r, echo=TRUE, out.width = '80%', fig.align='center'}
 plot(reg, which=4)
 ```
+
+
+**INTERPRETACIÓN DE LA EVALUACIÓN DE LOS SUPUESTOS**
+
+Debido a que el supuesto de independencia no se cumplió (resultado obtenido de la prueba de Durbin Watson) el modelo de regresión simple ajustado no sería la alternativa de análisis para este set de datos. 
 
 

@@ -1,5 +1,7 @@
 # Curso de análisis de datos con R e investigación reproducible para Biociencias.
 
+Fecha de realización: Enero 2022.
+
 # PROFESORES
 
 [**JOSÉ ANDRÉS GALLARDO MATUS**](https://github.com/DrJoseGallardo)  
